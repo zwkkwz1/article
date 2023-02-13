@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+	</head>
+	<body>
+		<script>
+			const lengthOfLIS = function(nums) {
+				const p = {}
+			    let len = nums.length;
+			    if (len <= 1) {
+			        return len;
+			    }
+			    let tails = [nums[0]];
+			    for (let i = 0; i < len; i++) {
+			        // 当前遍历元素 nums[i] 大于 前一个递增子序列的 尾元素时，追加到后面即可
+			        if (nums[i] > tails[tails.length - 1]) {
+			            tails.push(nums[i]);
+						p[nums[i]] = tails[tails.length - 2]
+			        } else {
+			            // 否则，查找递增子序列中第一个大于当前值的元素，用当前遍历元素 nums[i] 替换它
+			            // 递增序列，可以使用二分查找
+			            let left = 0;
+			            let right = tails.length - 1;
+			            while (left < right) {
+			                let mid = (left + right) >> 1;
+			                if (tails[mid] < nums[i]) {
+			                    left = mid + 1;
+			                } else {
+			                    right = mid;
+			                }
+			            }
+			            tails[left] = nums[i];
+						if (left >= 1) {
+							p[nums[i]] = tails[left - 1]
+						}
+			        }
+			    }
+				let right = tails.length - 1 // tails: [1, 3, 9]  p: {3: 1, 4: 1, 9: 4}
+				let v = tails[right - 1]
+				while(right > 0) {
+					tails[right - 1] = p[tails[right]]
+					right--
+				}
+			    return tails.length;
+			};
+			lengthOfLIS([1, 4, 9, 3])
+			function sortTwo(nums) {
+			  let len = nums.length;
+			  const p = {} // 拷贝一个数组 p
+			  if (len <= 1) {
+			      return len;
+			  }
+			  let tails = [nums[0]];
+			  for (let i = 0; i < len; i++) {
+			      // 当前遍历元素 nums[i] 大于 前一个递增子序列的 尾元素时，追加到后面即可
+			      if (nums[i] > tails[tails.length - 1]) {
+			          p[nums[i]] = tails[tails.length - 1]
+			          tails.push(nums[i]);
+			      } else {
+			          // 否则，查找递增子序列中第一个大于当前值的元素，用当前遍历元素 nums[i] 替换它
+			          // 递增序列，可以使用二分查找
+			          let left = 0;
+			          let right = tails.length - 1;
+			          while (left < right) {
+			              let mid = (left + right) >> 1;
+			              if (tails[mid] < nums[i]) {
+			                  left = mid + 1;
+			              } else {
+			                  right = mid;
+			              }
+			          }
+			          if (left - 1 >= 0) {
+			            p[nums[i]] = tails[left - 1]
+			          }
+			          tails[left] = nums[i];
+			      }
+			  }
+			  let right = tails.length // tails: [1, 3, 9]  p: {3: 1, 4: 1, 9: 4}
+			  let v = tails[right - 1]
+			  while (right-- > 0) {
+			    tails[right] = v
+			    v = p[v]
+			  }
+			  return tails.length;  // [1, 4 , 9]
+			}
+	
+			sortTwo([1, 4, 9, 3])
+			
+			function getSequence(arr) {
+			  const p = arr.slice();
+			  const result = [0];
+			  let i, j, u, v, c;
+			  const len = arr.length;
+			  for (i = 0; i < len; i++) {
+			    const arrI = arr[i];
+			    if (arrI !== 0) {
+			      j = result[result.length - 1];
+			      if (arr[j] < arrI) {
+			        p[i] = j;
+			        result.push(i);
+			        continue;
+			      }
+			      u = 0;
+			      v = result.length - 1;
+			      while (u < v) {
+			        c = ((u + v) / 2) | 0;
+			        if (arr[result[c]] < arrI) {
+			          u = c + 1;
+			        }
+			        else {
+			          v = c;
+			        }
+			      }
+			      if (arrI < arr[result[u]]) {
+			        if (u > 0) {
+			          p[i] = result[u - 1];
+			        }
+			        result[u] = i;
+			      }
+			    }
+			  }
+			  u = result.length;
+			  v = result[u - 1];
+			  while (u-- > 0) {
+			    result[u] = v;
+			    v = p[v];
+			  }
+			  return result;
+			}
+			getSequence([7, 1, 3, 4, 5, 6, 2])
+		</script>
+	</body>
+</html>
