@@ -8,6 +8,39 @@ Vue组件化相关的逻辑主要在patch过程中。
 
 Vue将模板编译成VNode之后，需要patch它。patch是个深度遍历过程，patch的时候用VNode的type属性判断它属于什么节点。Vue用vnode.type来储存组件的选项对象。所以当type是对象时，就需要对这个节点进行组件解析。省略中间过程。就是要执行组件的render方法获取子节点。然后再对子节点patch。
 
+---
+
+## setupComponent做的一些初始化工作
+
+在mountComponent的时候，会对组件进行一些初始化工作：执行setupComponent函数<br />
+
+**setupComponent函数内执行的操作有：**<br />
+1. initProps函数：里面生成了 instance.props和 instance.attrs<br />
+2. initSlots函数：里面生成了 instance.slots<br />
+```
+instance.slots = toRaw(children);
+```
+（initSlots这段没看，但是应该没错）<br />
+3. 执行setup选项获取setupResult，然后进行了compile（编译）生成了组件的render函数
+
+### 具体render函数的生成：
+
+setupComponent函数内执行了setupStatefulComponent函数，在这个函数内执行setup方法获取setupResult <br />
+然后执行handleSetupResult函数，在这个函数内，如果setupResult是函数，
+```
+instance.render = setupResult
+```
+
+然后执行finishComponentSetup函数，如果instance.render不存在，会执行
+
+```
+Component.render = compile(template, finalCompilerOptions);
+```
+即执行了编译过程，所以一个组件的编译过程是在setupComponent的时候进行，而setupComponent函数只在mountComponent方法内执行。
+所以组件的编译是在组件mountComponent的时候进行，所以只进行一次。然后编译结果是生成组件的render函数
+
+---
+
 app,vue
 
 ![](./1.png)

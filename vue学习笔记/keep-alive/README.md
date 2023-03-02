@@ -269,7 +269,7 @@ onActivated的第一个参数（即onActivated内写的函数：hook）将保存
 
 看代码⑦，KeepAlive组件自带的activate方法运行时。 组件实例的a属性内的方法将被执行。即onActivated内的方法被执行。
 
-看代码⑥，如果父组件是KeepAlive的，父组件的组件实例的a属性内也保持了这个hook。**所以当父组件的onActivated钩子内的函数被执行后，其所有子组件的onActivated钩子也会执行**
+看代码⑥，如果父组件是KeepAlive的，父组件的组件实例的a属性内也保存了这个hook,这个过程是while的所以只要祖先组件内有一个是KeepAlive的，这个hook就会存进这个祖先组件实力的a属性内。**所以KeepAlive内的组件，不论是第几层的子节点。它的onActivated钩子函数都会被执行**
 ```
 function mountComponent() {
     const componentOptions = vnode.type // vnode的type保存组件选项。
